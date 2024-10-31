@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class TeamManagerApp extends Application {
     private static final int MAX_TEAMS = 100;
     private final ArrayList<SportsTeam> teamList = new ArrayList<>();
+    private final BinarySearchTree apexTeamTree = new BinarySearchTree(); // Initialize BinarySearchTree
     private int teamCount = 100; // Start IDs from 100
 
     public static void main(String[] args) {
@@ -28,8 +29,7 @@ public class TeamManagerApp extends Application {
     public void start(Stage primaryStage) {
         showMainScreen(primaryStage);
     }
-//asks for 4 data types. (Name,team type, state, city)
-    //after this is finished prompting the user it will take team type and apply appropriate questions found in showApexFields, showBaseBallFields , showDodgeBallFields
+
     private void showMainScreen(Stage primaryStage) {
         Label teamNameLabel = new Label("Enter a Team Name:");
         TextField teamNameField = new TextField();
@@ -53,8 +53,9 @@ public class TeamManagerApp extends Application {
         Button searchButton = new Button("Search by ID");
         Button saveButton = new Button("Save Teams");
         Button loadButton = new Button("Load Teams");
+        Button checkApexKDButton = new Button("Check Highest Apex KD");
 
-        VBox vbox = new VBox(10, teamNameLabel, teamNameField, teamTypeLabel, teamTypeField, stateLabel, stateField, cityLabel, cityField, submitButton, viewTeamsButton, manageTeamsButton, searchButton, saveButton, loadButton);
+        VBox vbox = new VBox(10, teamNameLabel, teamNameField, teamTypeLabel, teamTypeField, stateLabel, stateField, cityLabel, cityField, submitButton, viewTeamsButton, manageTeamsButton, searchButton, saveButton, loadButton, checkApexKDButton); // Add button to vbox
         Scene scene = new Scene(vbox, 500, 500);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Create a New Team");
@@ -85,8 +86,17 @@ public class TeamManagerApp extends Application {
             loadTeams();
             showMainScreen(primaryStage);
         });
+
+        checkApexKDButton.setOnAction(event -> {
+            ApexTeam highestKDTeam = apexTeamTree.findHighestKDTeam();
+            if (highestKDTeam != null) {
+                showInfoDialog("Highest Apex KD", highestKDTeam.getDetails());
+            } else {
+                showInfoDialog("Highest Apex KD", "No Apex teams available.");
+            }
+        });
     }
-    //presents user with questions if apex is entered. This is the primary stage after the first field is finished
+
     private void showApexFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);
 
@@ -114,6 +124,7 @@ public class TeamManagerApp extends Application {
                 if (teamList.size() < MAX_TEAMS) {
                     ApexTeam apexTeam = new ApexTeam(teamName, "Apex Sport", state, city, teamCount++, rank, averageDamage, winLossRatio);
                     teamList.add(apexTeam);
+                    apexTeamTree.insert(apexTeam); // Insert into binary search tree
                     System.out.println("ApexTeam created: " + apexTeam);
 
                     Pane logoPane = apexTeam.getLogo();
@@ -135,7 +146,7 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    //presents user with questions if baseball is entered. This is the primary stage after the first field is finished
+
     private void showBaseballFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);
 
@@ -184,7 +195,7 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-        //presents user with questions if dodgeball is entered. This is the primary stage after the first field is finished
+
     private void showDodgeballFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);
 
@@ -233,7 +244,7 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    //Allows the user to manage teams by adding or removing them.
+
     private void showManageTeamsScreen(Stage primaryStage) {
         VBox vbox = new VBox(10);
 
@@ -273,30 +284,18 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    // takes the stage object (primary stage ) as a parameter.
-    //the method is responsible for displaying the appropriate list of teams
+
     private void showTeamList(Stage primaryStage) {
         ListView<VBox> listView = new ListView<>();
         ObservableList<VBox> items = FXCollections.observableArrayList();
 
-        for (SportsTeam team : teamList) {//goes through team list as it sorts though sportsTeam Object
+        for (SportsTeam team : teamList) {
             VBox vbox = new VBox(10);
             Text details = new Text(team.getDetails());
 
-            Pane logoPane = null;
-            if (team instanceof ApexTeam) {
-                logoPane = ((ApexTeam) team).getLogo();
-            } else if (team instanceof BaseBallTeam) {
-                logoPane = ((BaseBallTeam) team).getLogo();
-            } else if (team instanceof DodgeballTeam) {
-                logoPane = ((DodgeballTeam) team).getLogo();
-            }
-
-            if (logoPane != null) {
-                logoPane.setPrefSize(100, 100);
-                vbox.getChildren().add(logoPane);
-            }
-            vbox.getChildren().add(details);
+            Pane logoPane = team.getLogo();
+            logoPane.setPrefSize(100, 100);
+            vbox.getChildren().addAll(logoPane, details);
             items.add(vbox);
         }
 
@@ -310,8 +309,7 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    // takes user input and allows the user to enter an integer to find said team.
-    //showSearch Screen is loaded into the primary stage and can comunicate to look uyp past entries saved via File .io found in load teams
+
     private void showSearchScreen(Stage primaryStage) {
         VBox vbox = new VBox(10);
 
@@ -324,8 +322,7 @@ public class TeamManagerApp extends Application {
 
         searchButton.setOnAction(event -> {
             try {
-                int teamID = Integer.parseInt(searchField.getText().trim());//parse sets it as integer
-                //Call a method to find the team by the parsed team ID
+                int teamID = Integer.parseInt(searchField.getText().trim());
                 SportsTeam foundTeam = findTeamByID(teamID);
 
                 if (foundTeam != null) {
@@ -345,9 +342,8 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    // search for team via team id
-    //starts at 100 for team type of 1, then increments by 1 for each new team added
-        private SportsTeam findTeamByID(int teamID) {
+
+    private SportsTeam findTeamByID(int teamID) {
         return teamList.stream()
                 .filter(team -> team.getTeamID() == teamID)
                 .findFirst()
@@ -371,7 +367,7 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    // showTeamNotFound is a requirement to cover user id not found
+
     private void showTeamNotFound(Stage primaryStage) {
         VBox vbox = new VBox(10);
         Text notFoundText = new Text("Team not found.");
@@ -384,7 +380,6 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    // saves team using file .io stream to a file named teams.dat in the same directory as the program
 
     private void saveTeams() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("teams.dat"))) {
@@ -394,7 +389,6 @@ public class TeamManagerApp extends Application {
             showErrorDialog("Error saving teams.");
         }
     }
-    // load pre existing teams via file .io stream from a file named teams.dat in the same directory as the program
 
     @SuppressWarnings("unchecked")
     private void loadTeams() {
@@ -407,11 +401,17 @@ public class TeamManagerApp extends Application {
             showErrorDialog("Error loading teams.");
         }
     }
-    // handles different usages of dialog for the program, such as error handling and user feedback
 
     private void showErrorDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+    private void showInfoDialog(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        alert.setTitle(title);
         alert.setHeaderText(null);
         alert.showAndWait();
     }

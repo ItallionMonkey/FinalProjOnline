@@ -4,7 +4,7 @@ import javafx.scene.layout.Pane;
 import java.io.Serializable;
 
 public abstract class SportsTeam implements Serializable {
-    private static final long serialVersionUID = 1L;
+
     private String teamName;
     private String sport;
     private String state;
