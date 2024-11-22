@@ -1,5 +1,8 @@
 package com.example.finalprojonline;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 class BinaryTreeNode {
     ApexTeam team;
     BinaryTreeNode left, right;
@@ -18,19 +21,19 @@ class BinarySearchTree {
     public void insert(ApexTeam team) {
         root = insertRec(root, team);
     }
-    //
-    private BinaryTreeNode insertRec(BinaryTreeNode node, ApexTeam team) {
-        if (node == null) {
-            return new BinaryTreeNode(team);
-        }
 
-        if (team.getWinLossRatio() < node.team.getWinLossRatio()) {
+
+    private BinaryTreeNode insertRec(BinaryTreeNode node, ApexTeam team) {
+        BinaryTreeNode result = node;
+        if (node == null) {
+            result = new BinaryTreeNode(team);
+        } else if (team.getWinLossRatio() < node.team.getWinLossRatio()) {
             node.left = insertRec(node.left, team);
         } else {
             node.right = insertRec(node.right, team);
         }
 
-        return node;
+        return result;
     }
 
     // Find the team with the highest win/loss ratio (rightmost node)
