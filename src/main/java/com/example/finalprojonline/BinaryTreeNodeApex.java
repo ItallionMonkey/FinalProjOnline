@@ -34,7 +34,7 @@ class BinarySearchTree {
     }
 
     // Find the team with the highest win/loss ratio (rightmost node)
-    public ApexTeam findHighestKDTeam() {
+    public ApexTeam findHighestWinLoss() {
         if (root == null) {
             return null;
         }

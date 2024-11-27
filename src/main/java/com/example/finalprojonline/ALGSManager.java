@@ -1,58 +1,61 @@
 package com.example.finalprojonline;
 
-import javafx.scene.layout.Pane;
+public class ALGSManager extends ApexTeam {
 
-public class ALGSManager extends SportsTeam{
-    private int  age;
-    private String Residency;
-    private double AccountLevel;
-    private String eAAccount;
-    private String Registration;
+    private int gameTag;
+    private int age;
+    private String residency;
+    private boolean isSignedContract;
 
+    public ALGSManager() {
+        super();
+    }
+
+    public ALGSManager(String teamName, String sport, String state, String city, int teamID, String rank, int averageDamage, double winLossRatio,
+                      int gameTag, int age, String residency, boolean isSignedContract) {
+        super(teamName, sport, state, city, teamID, rank, averageDamage, winLossRatio);
+        this.gameTag = gameTag;
+        this.age = age;
+        this.residency = residency;
+        this.isSignedContract = isSignedContract;
+    }
+
+    // Getters and Setters for AlgsManger-specific fields
+    public int getGameTag() {
+        return gameTag;
+    }
+
+    public void setGameTag(int gameTag) {
+        this.gameTag = gameTag;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getResidency() {
+        return residency;
+    }
+
+    public void setResidency(String residency) {
+        this.residency = residency;
+    }
+
+    public boolean isSignedContract() {
+        return isSignedContract;
+    }
+
+    public void setSignedContract(boolean signedContract) {
+        isSignedContract = signedContract;
+    }
 
     @Override
     public String getDetails() {
-        return "";
+        return String.format("Algs Manager - ID: %d, Name: %s, Sport: %s, State: %s, City: %s, Rank: %s, Avg Damage: %d, Win/Loss Ratio: %.2f, GameTag: %d, Age: %d, Residency: %d, Signed Contract: %b",
+                getTeamID(), getTeamName(), getSport(), getState(), getCity(), getRank(), getAverageDamage(), getWinLossRatio(), gameTag, age, residency, isSignedContract);
     }
-    @Override
-    public Pane getLogo() {
-        return null;
-    }
-    public int getAge() {
-
-    }
-    public void setAge(int age) {
-
-    }
-        public String getResidency() {
-
-    }
-    public void setResidency(String residency) {
-
-    }
-    public double getAccountLevel() {
-
-    }
-
-//    this is a going to pull from the intent form this url(https://algs.ea.com/champs-2024/news/Partcipation_Badge)
-    public void setAccountLevel(double accountLevel) {
-
-    }
-//    this is a going to pull from the intent form this url(https://algs.ea.com/champs-2024/news/Partcipation_Badge)
-     public String geteAAccount() {
-
-    }
-    public void seteAAccount(String eAAccount) {
-
-    }
-    //this is going to have an attached pdf that is the offical terms and conditions for the player to sign
-    public void setRegistration(String registration) {
-
-    }
-    public String getRegistration() {
-
-    }
-
-
-
 }

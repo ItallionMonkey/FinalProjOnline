@@ -5,11 +5,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
 
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +38,8 @@ public class TeamManagerApp extends Application {
     }
 
     private void showMainScreen(Stage primaryStage) {
+        primaryStage.setTitle("This application allows users to create teams to create brackets and check team stats.");
+
         Label teamNameLabel = new Label("Enter a Team Name:");
         TextField teamNameField = new TextField();
         teamNameField.setPromptText("Team Name");
@@ -48,19 +57,23 @@ public class TeamManagerApp extends Application {
         cityField.setPromptText("City");
 
         Button submitButton = new Button("Submit");
-        Button viewTeamsButton = new Button("View All Teams");
-        Button manageTeamsButton = new Button("Manage Teams");
-        Button searchButton = new Button("Search by ID");
-        Button saveButton = new Button("Save Teams");
-        Button loadButton = new Button("Load Teams");
-        Button checkApexKDButton = new Button("Check Highest Apex KD");
 
-        VBox vbox = new VBox(10, teamNameLabel, teamNameField, teamTypeLabel, teamTypeField, stateLabel, stateField, cityLabel, cityField, submitButton, viewTeamsButton, manageTeamsButton, searchButton, saveButton, loadButton, checkApexKDButton); // Add button to vbox
-        Scene scene = new Scene(vbox, 500, 500);
+        // MenuBar with options
+        MenuBar menuBar = new MenuBar();
+        Menu menuOptions = new Menu("Options");
+        MenuItem viewTeamsItem = new MenuItem("View All Teams");
+        MenuItem manageTeamsItem = new MenuItem("Manage Teams");
+        MenuItem searchByIdItem = new MenuItem("Search by ID");
+        MenuItem checkHighWinLossItem = new MenuItem("Check High Win/Loss Ratio");
+        menuOptions.getItems().addAll(viewTeamsItem, manageTeamsItem, searchByIdItem, checkHighWinLossItem);
+        menuBar.getMenus().add(menuOptions);
+
+        VBox vbox = new VBox(10, menuBar, teamNameLabel, teamNameField, teamTypeLabel, teamTypeField, stateLabel, stateField, cityLabel, cityField, submitButton);
+        Scene scene = new Scene(vbox, 800, 800);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Create a New Team");
         primaryStage.show();
 
+        // Action for Submit Button
         submitButton.setOnAction(event -> {
             String teamName = teamNameField.getText().trim();
             String teamType = teamTypeField.getText().trim();
@@ -78,24 +91,20 @@ public class TeamManagerApp extends Application {
             }
         });
 
-        viewTeamsButton.setOnAction(event -> showTeamList(primaryStage));
-        manageTeamsButton.setOnAction(event -> showManageTeamsScreen(primaryStage));
-        searchButton.setOnAction(event -> showSearchScreen(primaryStage));
-        saveButton.setOnAction(event -> saveTeams());
-        loadButton.setOnAction(event -> {
-            loadTeams();
-            showMainScreen(primaryStage);
-        });
-
-        checkApexKDButton.setOnAction(event -> {
-            ApexTeam highestKDTeam = apexTeamTree.findHighestKDTeam();
+        // Menu Item Actions
+        viewTeamsItem.setOnAction(event -> showTeamList(primaryStage));
+        manageTeamsItem.setOnAction(event -> showManageTeamsScreen(primaryStage));
+        searchByIdItem.setOnAction(event -> showSearchScreen(primaryStage));
+        checkHighWinLossItem.setOnAction(event -> {
+            ApexTeam highestKDTeam = apexTeamTree.findHighestWinLoss();
             if (highestKDTeam != null) {
-                showInfoDialog("Highest Apex KD", highestKDTeam.getDetails());
+                showInfoDialog("Highest Apex W/L", highestKDTeam.getDetails());
             } else {
-                showInfoDialog("Highest Apex KD", "No Apex teams available.");
+                showInfoDialog("Highest Apex W/L", "No Apex teams available.");
             }
         });
     }
+
 
     private void showApexFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);
@@ -112,9 +121,11 @@ public class TeamManagerApp extends Application {
         TextField winLossRatioField = new TextField();
         winLossRatioField.setPromptText("Enter win/loss ratio");
 
-        Button submitButton = new Button("Submit");
+        Button submitButton = new Button("Submit Apex Team");
+        Button createAlgsManagerButton = new Button("Algs Manager"); // New button
         Button backButton = new Button("Back to Main Menu");
 
+        // Handle Apex Team submission
         submitButton.setOnAction(event -> {
             try {
                 String rank = rankField.getText().trim();
@@ -139,13 +150,132 @@ public class TeamManagerApp extends Application {
             }
         });
 
+        // Handle AlgsManger creation
+        createAlgsManagerButton.setOnAction(event -> showALGSManagerFields(primaryStage, teamName, state, city, rankField.getText(), avgDamageField.getText(), winLossRatioField.getText()));
+
         backButton.setOnAction(event -> showMainScreen(primaryStage));
 
-        vbox.getChildren().addAll(rankLabel, rankField, avgDamageLabel, avgDamageField, winLossRatioLabel, winLossRatioField, submitButton, backButton);
-        Scene scene = new Scene(vbox, 400, 300);
+        vbox.getChildren().addAll(rankLabel, rankField, avgDamageLabel, avgDamageField, winLossRatioLabel, winLossRatioField, submitButton, createAlgsManagerButton, backButton);
+        Scene scene = new Scene(vbox, 400, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+    private void showALGSManagerFields(Stage primaryStage, String teamName, String state, String city, String rank, String avgDamage, String winLossRatio) {
+        VBox vbox = new VBox(10);
+
+        // Input fields for AlgsManger-specific data
+        Label gameTagLabel = new Label("Game Tag:");
+        TextField gameTagField = new TextField();
+        gameTagField.setPromptText("Enter game tag");
+
+        Label ageLabel = new Label("Age:");
+        TextField ageField = new TextField();
+        ageField.setPromptText("Enter age (must be 16 or older)");
+
+        Label residencyLabel = new Label("Residency:");
+        TextField residencyField = new TextField();
+        residencyField.setPromptText("Enter residency");
+
+        CheckBox contractCheckbox = new CheckBox("Signed Contract");
+
+        // Terms and Service PDF viewing button
+        Label termsLabel = new Label("View Terms and Service:");
+        Button viewTermsButton = new Button("View Terms and Service");
+        viewTermsButton.setOnAction(event -> {
+            File termsFile = new File("terms_and_service.pdf");
+            if (termsFile.exists()) {
+                openPdfFile(termsFile);
+            } else {
+                showErrorDialog("Terms and Service PDF not found. Please ensure it is available.");
+            }
+        });
+
+        // Submit button
+        Button submitButton = new Button("Submit Algs Manager");
+        submitButton.setOnAction(event -> {
+            try {
+                // Parse inputs and validate
+                int gameTag = Integer.parseInt(gameTagField.getText().trim());
+                int age = Integer.parseInt(ageField.getText().trim());
+                String residency = residencyField.getText().trim();
+                boolean isSignedContract = contractCheckbox.isSelected();
+
+                // Validate age
+                if (age < 16) {
+                    throw new IllegalArgumentException("Age must be 16 or older.");
+                }
+
+                // Validate residency
+                if (residency.isEmpty()) {
+                    throw new IllegalArgumentException("Residency must be filled in.");
+                }
+                // Parse avgDamage and winLossRatio safely
+                int averageDamage;
+                double winLoss;
+                try {
+                    averageDamage = Integer.parseInt(avgDamage);
+                    winLoss = Double.parseDouble(winLossRatio);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid numeric input for Average Damage or Win/Loss Ratio.");
+                }
+
+                // Add AlgsManger if inputs are valid
+                if (teamList.size() <= 20) {
+                    ALGSManager algsManager = new ALGSManager(teamName, "Apex Sport", state, city, teamCount++, rank, averageDamage, winLoss, gameTag, age, residency, isSignedContract);
+                    teamList.add(algsManager);
+                    apexTeamTree.insert(algsManager); // Insert into binary search tree
+                    System.out.println("AlgsManger created: " + algsManager);
+
+                    Pane logoPane = algsManager.getLogo();
+                    logoPane.setPrefSize(100, 100);
+                    vbox.getChildren().add(logoPane);
+                }
+
+                else {
+                    showErrorDialog("Maximum team capacity reached.");
+                }
+                showMainScreen(primaryStage);
+            } catch (NumberFormatException e) {
+                showErrorDialog("Invalid input. Please ensure all fields are filled out correctly.");
+            } catch (IllegalArgumentException e) {
+                showErrorDialog(e.getMessage());
+            }
+        });
+
+        // Back button
+        Button backButton = new Button("Back");
+        backButton.setOnAction(event -> showApexFields(primaryStage, teamName, state, city));
+
+        // Add all elements to the VBox
+        vbox.getChildren().addAll(
+                gameTagLabel, gameTagField,
+                ageLabel, ageField,
+                residencyLabel, residencyField,
+                contractCheckbox,
+                termsLabel, viewTermsButton,
+                submitButton, backButton
+        );
+
+        // Set up the scene
+        Scene scene = new Scene(vbox, 400, 500);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    private void openPdfFile(File pdfFile) {
+        try {
+            if (Desktop.isDesktopSupported() && pdfFile.exists()) {
+                Desktop.getDesktop().open(pdfFile);
+            } else {
+                showErrorDialog("Unable to open PDF. Desktop feature not supported or file not found.");
+            }
+        } catch (IOException e) {
+            showErrorDialog("An error occurred while opening the PDF.");
+        }
+    }
+
+
+
 
     private void showBaseballFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);
