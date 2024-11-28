@@ -2,7 +2,7 @@ package com.example.finalprojonline;
 
 import javafx.scene.layout.Pane;
 
-public class ALGSManager extends SportsTeam{
+public class ALGSManger extends SportsTeam{
     private int  age;
     private String Residency;
     private double AccountLevel;
