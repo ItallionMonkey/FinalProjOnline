@@ -11,6 +11,7 @@ public class ALGSManager extends ApexTeam {
         super();
     }
 
+
     public ALGSManager(String teamName, String sport, String state, String city, int teamID, String rank, int averageDamage, double winLossRatio,
                       int gameTag, int age, String residency, boolean isSignedContract) {
         super(teamName, sport, state, city, teamID, rank, averageDamage, winLossRatio);
