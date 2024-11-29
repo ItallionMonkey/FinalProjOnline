@@ -38,8 +38,7 @@ public class TeamManagerApp extends Application {
     }
 
     private void showMainScreen(Stage primaryStage) {
-        primaryStage.setTitle("This application allows users to create teams to create brackets and check team stats.");
-
+        primaryStage.setTitle("Team Manager");
         Label teamNameLabel = new Label("Enter a Team Name:");
         TextField teamNameField = new TextField();
         teamNameField.setPromptText("Team Name");
@@ -64,8 +63,10 @@ public class TeamManagerApp extends Application {
         MenuItem viewTeamsItem = new MenuItem("View All Teams");
         MenuItem manageTeamsItem = new MenuItem("Manage Teams");
         MenuItem searchByIdItem = new MenuItem("Search by ID");
+        MenuItem saveTeamsItem = new MenuItem("Save Teams");
+        MenuItem loadTeamsItem = new MenuItem("Load Teams");
         MenuItem checkHighWinLossItem = new MenuItem("Check High Win/Loss Ratio");
-        menuOptions.getItems().addAll(viewTeamsItem, manageTeamsItem, searchByIdItem, checkHighWinLossItem);
+        menuOptions.getItems().addAll(viewTeamsItem, manageTeamsItem, searchByIdItem, checkHighWinLossItem,saveTeamsItem, loadTeamsItem);
         menuBar.getMenus().add(menuOptions);
 
         VBox vbox = new VBox(10, menuBar, teamNameLabel, teamNameField, teamTypeLabel, teamTypeField, stateLabel, stateField, cityLabel, cityField, submitButton);
@@ -228,7 +229,7 @@ public class TeamManagerApp extends Application {
                     System.out.println("AlgsManger created: " + algsManager);
 
                     Pane logoPane = algsManager.getLogo();
-                    logoPane.setPrefSize(100, 100);
+                    logoPane.setPrefSize(800, 800);
                     vbox.getChildren().add(logoPane);
                 }
 
@@ -258,7 +259,7 @@ public class TeamManagerApp extends Application {
         );
 
         // Set up the scene
-        Scene scene = new Scene(vbox, 400, 500);
+        Scene scene = new Scene(vbox, 800, 800);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
