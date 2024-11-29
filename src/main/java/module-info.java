@@ -3,6 +3,7 @@ module com.example.finalprojonline {
     requires javafx.fxml;
     requires java.sql;
     requires java.desktop;
+    requires annotations;
 
 
     opens com.example.finalprojonline to javafx.fxml;
