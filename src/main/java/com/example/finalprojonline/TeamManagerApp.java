@@ -66,7 +66,10 @@ public class TeamManagerApp extends Application {
         MenuItem saveTeamsItem = new MenuItem("Save Teams");
         MenuItem loadTeamsItem = new MenuItem("Load Teams");
         MenuItem checkHighWinLossItem = new MenuItem("Check High Win/Loss Ratio");
-        menuOptions.getItems().addAll(viewTeamsItem, manageTeamsItem, searchByIdItem, checkHighWinLossItem,saveTeamsItem, loadTeamsItem);
+        saveTeamsItem.setOnAction(event -> saveTeams());
+        loadTeamsItem.setOnAction(event -> loadTeams());
+
+        menuOptions.getItems().addAll(viewTeamsItem, manageTeamsItem, searchByIdItem, checkHighWinLossItem ,saveTeamsItem, loadTeamsItem );
         menuBar.getMenus().add(menuOptions);
 
         VBox vbox = new VBox(10, menuBar, teamNameLabel, teamNameField, teamTypeLabel, teamTypeField, stateLabel, stateField, cityLabel, cityField, submitButton);
@@ -184,7 +187,7 @@ public class TeamManagerApp extends Application {
         Label termsLabel = new Label("View Terms and Service:");
         Button viewTermsButton = new Button("View Terms and Service");
         viewTermsButton.setOnAction(event -> {
-            File termsFile = new File("terms_and_service.pdf");
+            File termsFile = new File("\"C:\\Users\\VANGURAAL23\\Downloads\\algs-2-0-rules-20220513.pdf\"");
             if (termsFile.exists()) {
                 openPdfFile(termsFile);
             } else {
