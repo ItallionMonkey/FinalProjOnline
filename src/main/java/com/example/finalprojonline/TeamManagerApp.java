@@ -19,7 +19,9 @@ import javafx.scene.text.Text;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TeamManagerApp extends Application {
@@ -112,6 +114,7 @@ public class TeamManagerApp extends Application {
 
     private void showApexFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);
+        Map<String, String> tempTeamData = new HashMap<>();
 
         Label rankLabel = new Label("Rank:");
         TextField rankField = new TextField();
@@ -124,10 +127,49 @@ public class TeamManagerApp extends Application {
         Label winLossRatioLabel = new Label("Win/Loss Ratio:");
         TextField winLossRatioField = new TextField();
         winLossRatioField.setPromptText("Enter win/loss ratio");
-
+        if (teamList.size() >= MAX_TEAMS) {
+            showErrorDialog("Maximum team capacity reached.");
+            return;
+        }
+        Button saveCurrentInfo = new Button("Save");
         Button submitButton = new Button("Submit Apex Team");
         Button createAlgsManagerButton = new Button("Algs Manager"); // New button
         Button backButton = new Button("Back to Main Menu");
+        saveCurrentInfo.setOnAction(event -> {
+            try {
+                // Validate inputs before saving
+                if (rankField.getText().trim().isEmpty() ||
+                        avgDamageField.getText().trim().isEmpty() ||
+                        winLossRatioField.getText().trim().isEmpty()) {
+                    showErrorDialog("Please fill all fields before saving.");
+                    return;
+                }
+
+                // Validate numeric fields
+                try {
+                    Integer.parseInt(avgDamageField.getText().trim());
+                    Double.parseDouble(winLossRatioField.getText().trim());
+                } catch (NumberFormatException e) {
+                    showErrorDialog("Please enter valid numbers for Average Damage and Win/Loss Ratio.");
+                    return;
+                }
+
+                // Save the current information
+                tempTeamData.put("rank", rankField.getText().trim());
+                tempTeamData.put("averageDamage", avgDamageField.getText().trim());
+                tempTeamData.put("winLossRatio", winLossRatioField.getText().trim());
+
+                showInfoDialog("Save Successful", "Team information has been saved.");
+
+                // Enable the Algs Manager button after saving
+                createAlgsManagerButton.setDisable(false);
+            } catch (Exception e) {
+                showErrorDialog("Error saving data: " + e.getMessage());
+            }
+        });
+
+        // Initially disable Algs Manager button until data is saved
+        createAlgsManagerButton.setDisable(true);
 
         // Handle Apex Team submission
         submitButton.setOnAction(event -> {
@@ -155,11 +197,24 @@ public class TeamManagerApp extends Application {
         });
 
         // Handle AlgsManger creation
-        createAlgsManagerButton.setOnAction(event -> showALGSManagerFields(primaryStage, teamName, state, city, rankField.getText(), avgDamageField.getText(), winLossRatioField.getText()));
-
+        createAlgsManagerButton.setOnAction(event -> {
+            if (tempTeamData.isEmpty()) {
+                showErrorDialog("Please save team information first.");
+                return;
+            }
+            showALGSManagerFields(
+                    primaryStage,
+                    teamName,
+                    state,
+                    city,
+                    rankField.getText(),
+                    avgDamageField.getText(),
+                    winLossRatioField.getText()
+            );
+        });
         backButton.setOnAction(event -> showMainScreen(primaryStage));
 
-        vbox.getChildren().addAll(rankLabel, rankField, avgDamageLabel, avgDamageField, winLossRatioLabel, winLossRatioField, submitButton, createAlgsManagerButton, backButton);
+        vbox.getChildren().addAll(rankLabel, rankField, avgDamageLabel, avgDamageField, winLossRatioLabel, winLossRatioField, submitButton, saveCurrentInfo, createAlgsManagerButton, backButton);
         Scene scene = new Scene(vbox, 400, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -175,7 +230,7 @@ public class TeamManagerApp extends Application {
 
         Label ageLabel = new Label("Age:");
         TextField ageField = new TextField();
-        ageField.setPromptText("Enter age (must be 16 or older)");
+        ageField.setPromptText("Enter age");
 
         Label residencyLabel = new Label("Residency:");
         TextField residencyField = new TextField();
@@ -200,7 +255,7 @@ public class TeamManagerApp extends Application {
         submitButton.setOnAction(event -> {
             try {
                 // Parse inputs and validate
-                int gameTag = Integer.parseInt(gameTagField.getText().trim());
+                String gameTag = (gameTagField.getText().trim());
                 int age = Integer.parseInt(ageField.getText().trim());
                 String residency = residencyField.getText().trim();
                 boolean isSignedContract = contractCheckbox.isSelected();
@@ -543,10 +598,13 @@ public class TeamManagerApp extends Application {
         alert.showAndWait();
     }
 
-    private void showInfoDialog(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+
+    private void showInfoDialog(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
+        alert.setContentText(content);
         alert.showAndWait();
     }
+
 }

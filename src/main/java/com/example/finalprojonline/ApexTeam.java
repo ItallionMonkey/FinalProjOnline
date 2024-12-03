@@ -66,7 +66,7 @@ public class ApexTeam extends SportsTeam {
     @Override
     public String getDetails() {
         return String.format("Apex Team - ID: %d, Name: %s, Sport: %s, State: %s, City: %s, Rank: %s, Avg Damage: %d, Win/Loss Ratio: %.2f",
-                getTeamID(), getTeamName(), getSport(), getState(), getCity(), rank, averageDamage, winLossRatio);
+                getTeamID(), getTeamName(), getSport(), getState(), getCity(), rank, averageDamage, winLossRatio);// need to add a way to save and possibly add info from ALGS
     }
 
     @Override
