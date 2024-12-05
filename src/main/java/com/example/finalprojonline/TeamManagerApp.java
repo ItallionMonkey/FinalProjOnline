@@ -18,12 +18,11 @@ import javafx.scene.text.Text;
 
 import java.awt.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class TeamManagerApp extends Application {
@@ -31,6 +30,7 @@ public class TeamManagerApp extends Application {
     private final ArrayList<SportsTeam> teamList = new ArrayList<>();
     private final BinarySearchTree apexTeamTree = new BinarySearchTree(); // Initialize BinarySearchTree
     private int teamCount = 100; // Start IDs from 100
+    boolean isClicked = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -133,6 +133,7 @@ public class TeamManagerApp extends Application {
             showErrorDialog("Maximum team capacity reached.");
             return;
         }
+
         Button saveCurrentInfo = new Button("Save");
         Button submitButton = new Button("Submit Apex Team");
         Button createAlgsManagerButton = new Button("Algs Manager"); // New button
@@ -223,6 +224,7 @@ public class TeamManagerApp extends Application {
     }
 
     private void showALGSManagerFields(Stage primaryStage, String teamName, String state, String city, String rank, String avgDamage, String winLossRatio) {
+
         VBox vbox = new VBox(10);
 
         // Input fields for AlgsManger-specific data
@@ -239,14 +241,21 @@ public class TeamManagerApp extends Application {
         residencyField.setPromptText("Enter residency");
 
         CheckBox contractCheckbox = new CheckBox("Signed Contract");
+        contractCheckbox.setDisable(!isClicked);
 
         // Terms and Service PDF viewing button
-        Label termsLabel = new Label("View Terms and Service:");
-        Button viewTermsButton = new Button("View Terms and Service");
+        Label termsLabel = new Label("View Terms Of Service:");
+        Button viewTermsButton = new Button("View Terms Of Service");
+//        isClicked = viewTermsButton.
+//        System.out.println(isClicked = viewTermsButton.isPressed());
+
+
         viewTermsButton.setOnAction(event -> {
-            File termsFile = new File("\"C:\\Users\\VANGURAAL23\\Downloads\\algs-2-0-rules-20220513.pdf\"");
+            isClicked = true;
+            contractCheckbox.setDisable(!isClicked);
+            File termsFile = new File("algs-2-0-rules-20220513.pdf");
             if (termsFile.exists()) {
-                openPdfFile(String.valueOf(termsFile));
+                openPdfFile(termsFile);
             } else {
                 showErrorDialog("Terms and Service PDF not found. Please ensure it is available.");
             }
@@ -282,9 +291,10 @@ public class TeamManagerApp extends Application {
                 }
 
                 // Add AlgsManger if inputs are valid
-                if (teamList.size() < 20) {
-                    ALGSManager algsManager = new ALGSManager(teamName, "Apex ", state, city, teamCount++, rank, averageDamage, winLoss, gameTag, age, residency, isSignedContract);                    teamList.add(algsManager);
-                    //apexTeamTree.insert(algsManager); // Insert into binary search tree
+                if (teamList.size() <= 20) {
+                    ALGSManager algsManager = new ALGSManager(teamName, "Apex Sport", state, city, teamCount++, rank, averageDamage, winLoss, gameTag, age, residency, isSignedContract);
+                    teamList.add(algsManager);
+                    apexTeamTree.insert(algsManager); // Insert into binary search tree
                     System.out.println("AlgsManger created: " + algsManager);
 
                     Pane logoPane = algsManager.getLogo();
@@ -322,22 +332,15 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    private void openPdfFile(String pdfFileName) {
+
+    private void openPdfFile(File pdfFileName) {
         try {
-            File termsFile = new File("C:\\Users\\VANGURAAL23\\Downloads\\algs-2-0-rules-20220513.pdf");
-            InputStream inputStream = getClass().getResourceAsStream(pdfFileName);
-
+            Desktop.getDesktop().open(pdfFileName);
         }
-
-        catch (Exception e) {
-            showErrorDialog("An unexpected error occurred: " + e.getMessage());
+        catch(Exception e) {
+            System.out.println("TODO");
         }
-
     }
-
-
-
-
 
     private void showBaseballFields(Stage primaryStage, String teamName, String state, String city) {
         VBox vbox = new VBox(10);

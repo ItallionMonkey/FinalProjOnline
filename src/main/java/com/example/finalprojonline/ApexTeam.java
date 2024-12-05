@@ -102,4 +102,5 @@ public class ApexTeam extends SportsTeam {
 
         return logoPane;
     }
+
 }

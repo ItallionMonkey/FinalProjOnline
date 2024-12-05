@@ -1,5 +1,7 @@
 package com.example.finalprojonline;
 
+import javafx.scene.layout.Pane;
+
 public class ALGSManager extends ApexTeam {
 
     private String gameTag;
@@ -65,7 +67,6 @@ public class ALGSManager extends ApexTeam {
         String gameTagHolder = getGameTag();
 
         try {
-
             String url = "https://apex.tracker.gg/apex/profile/origin/"+gameTagHolder +"/overview";
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
         } catch (java.io.IOException e) {
