@@ -18,6 +18,8 @@ import javafx.scene.text.Text;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -244,7 +246,7 @@ public class TeamManagerApp extends Application {
         viewTermsButton.setOnAction(event -> {
             File termsFile = new File("\"C:\\Users\\VANGURAAL23\\Downloads\\algs-2-0-rules-20220513.pdf\"");
             if (termsFile.exists()) {
-                openPdfFile(termsFile);
+                openPdfFile(String.valueOf(termsFile));
             } else {
                 showErrorDialog("Terms and Service PDF not found. Please ensure it is available.");
             }
@@ -321,17 +323,15 @@ public class TeamManagerApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    private void openPdfFile(File pdfFile) {
+    private void openPdfFile(String pdfFileName) {
         try {
-            if (Desktop.isDesktopSupported() && pdfFile.exists()) {
-                Desktop.getDesktop().open(pdfFile);
-            } else {
-                showErrorDialog("Unable to open PDF. Desktop feature not supported or file not found.");
-            }
-        } catch (IOException e) {
-            showErrorDialog("An error occurred while opening the PDF.");
+            // Get the resource as a stream from the project
+            InputStream inputStream = getClass().getResourceAsStream("algs-2-0-rules-20220513.pdf" + pdfFileName);
+
+
         }
     }
+
 
 
 
