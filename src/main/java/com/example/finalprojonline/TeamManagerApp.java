@@ -282,10 +282,9 @@ public class TeamManagerApp extends Application {
                 }
 
                 // Add AlgsManger if inputs are valid
-                if (teamList.size() <= 20) {
-                    ALGSManager algsManager = new ALGSManager(teamName, "Apex Sport", state, city, teamCount++, rank, averageDamage, winLoss, gameTag, age, residency, isSignedContract);
-                    teamList.add(algsManager);
-                    apexTeamTree.insert(algsManager); // Insert into binary search tree
+                if (teamList.size() < 20) {
+                    ALGSManager algsManager = new ALGSManager(teamName, "Apex ", state, city, teamCount++, rank, averageDamage, winLoss, gameTag, age, residency, isSignedContract);                    teamList.add(algsManager);
+                    //apexTeamTree.insert(algsManager); // Insert into binary search tree
                     System.out.println("AlgsManger created: " + algsManager);
 
                     Pane logoPane = algsManager.getLogo();
@@ -325,11 +324,15 @@ public class TeamManagerApp extends Application {
     }
     private void openPdfFile(String pdfFileName) {
         try {
-            // Get the resource as a stream from the project
-            InputStream inputStream = getClass().getResourceAsStream("algs-2-0-rules-20220513.pdf" + pdfFileName);
-
+            File termsFile = new File("C:\\Users\\VANGURAAL23\\Downloads\\algs-2-0-rules-20220513.pdf");
+            InputStream inputStream = getClass().getResourceAsStream(pdfFileName);
 
         }
+
+        catch (Exception e) {
+            showErrorDialog("An unexpected error occurred: " + e.getMessage());
+        }
+
     }
 
 

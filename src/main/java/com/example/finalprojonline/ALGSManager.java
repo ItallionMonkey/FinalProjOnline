@@ -56,8 +56,10 @@ public class ALGSManager extends ApexTeam {
 
     @Override
     public String getDetails() {
-        return String.format("Algs Manager - ID: %d, Name: %s, Sport: %s, State: %s, City: %s, Rank: %s, Avg Damage: %d, Win/Loss Ratio: %.2f, GameTag: %d, Age: %d, Residency: %d, Signed Contract: %b",
-                getTeamID(), getTeamName(), getSport(), getState(), getCity(), getRank(), getAverageDamage(), getWinLossRatio(), gameTag, age, residency, isSignedContract);// this is throwing the error
+        return String.format(
+                "Algs Manager - ID: %d, Name: %s, Sport: %s, State: %s, City: %s, Rank: %s, Avg Damage: %d, Win/Loss Ratio: %.2f, GameTag: %s, Age: %d, Residency: %s, Signed Contract: %b",
+                getTeamID(), getTeamName(), getSport(), getState(), getCity(), getRank(), getAverageDamage(), getWinLossRatio(), this.gameTag, this.age, this.residency, this.isSignedContract
+        );
     }
     private void ButtonOpenWebActionPerformed(java.awt.event.ActionEvent evt) {
         String gameTagHolder = getGameTag();
